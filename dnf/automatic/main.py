@@ -97,6 +97,7 @@ class CommandsConfig(dnf.yum.config.BaseConfig):
     download_updates = dnf.yum.config.BoolOption(False)
     upgrade_type = dnf.yum.config.SelectionOption(
         'default', ('default', 'security'))
+    random_sleep = dnf.yum.config.SecondsOption(0)
 
     def imply(self):
         if self.apply_updates:
@@ -147,6 +148,9 @@ def main(args):
             if not conf.commands.download_updates:
                 emitters.commit()
                 return 0
+	
+            sleep(random.randint(random_sleep(conf.command.random_sleep)))
+		
 
             base.download_packages(trans.install_set)
             emitters.notify_downloaded()
