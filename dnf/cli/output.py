@@ -373,7 +373,12 @@ class Output(object):
             columns = (-40, -22, -16) # Old default
         na = '%s%s.%s' % (indent, pkg.name, pkg.arch)
         hi_cols = [highlight, 'normal', 'normal']
-        columns = zip((na, pkg.evr, pkg.reponame), columns, hi_cols)
+        yumdb_info = self.yumdb.get_package(pkg) if pkg.from_system else {}
+        if 'from_repo' in yumdb_info:
+            repo = '@'+yumdb_info.from_repo
+        else:
+            repo = pkg.reponame
+        columns = zip((na, pkg.evr, repo), columns, hi_cols)
         print(self.fmtColumns(columns))
 
     def simpleEnvraList(self, pkg, ui_overflow=False,

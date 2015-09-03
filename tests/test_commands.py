@@ -221,6 +221,10 @@ class RepoPkgsCheckUpdateSubCommandTest(unittest.TestCase):
 
     def test(self):
         """Test whether only upgrades in the repository are listed."""
+        for pkg in self.cli.base.sack.query().installed().filter(name='tour'):
+            self.cli.base.yumdb.db[str(pkg)] = support.RPMDBAdditionalDataPackageStub()
+            self.cli.base.yumdb.get_package(pkg).from_repo = 'updates'
+
         cmd = dnf.cli.commands.RepoPkgsCommand.CheckUpdateSubCommand(self.cli)
         with support.patch_std_streams() as (stdout, _):
             cmd.run_on_repo('updates', [])
@@ -238,11 +242,11 @@ class RepoPkgsCheckUpdateSubCommandTest(unittest.TestCase):
             u'hole.i686                                 2-1'
             u'                            updates\n'
             u'    tour.noarch                           5-0'
-            u'                            @System\n'
+            u'                            @updates\n'
             u'hole.x86_64                               2-1'
             u'                            updates\n'
             u'    tour.noarch                           5-0'
-            u'                            @System\n')
+            u'                            @updates\n')
         self.assertEqual(self.cli.demands.success_exit_status, 100)
 
     def test_not_found(self):
